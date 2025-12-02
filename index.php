@@ -6,6 +6,7 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -69,16 +70,24 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
             padding: 1.2rem;
             font-weight: 600;
             font-size: 1.1rem;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin: 1.8rem 0;
             border-radius: 8px;
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.4); }
-            70% { box-shadow: 0 0 0 12px rgba(0, 200, 83, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 12px rgba(0, 200, 83, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 200, 83, 0);
+            }
         }
 
         .container {
@@ -227,19 +236,46 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
         }
 
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
         }
 
         @media (max-width: 600px) {
-            header h1 { font-size: 1.7rem; }
-            header h2 { font-size: 1.05rem; }
-            .post-content { padding: 1.2rem; }
-            .whatsapp-float { width: 55px; height: 55px; font-size: 20px; }
+            header h1 {
+                font-size: 1.7rem;
+            }
+
+            header h2 {
+                font-size: 1.05rem;
+            }
+
+            .post-content {
+                padding: 1.2rem;
+            }
+
+            .whatsapp-float {
+                width: 55px;
+                height: 55px;
+                font-size: 20px;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Header dengan Logo -->
@@ -264,9 +300,9 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
             <?php foreach ($posts as $post): ?>
                 <div class="post-card">
                     <?php if (!empty($post['image'])): ?>
-                        <img src="assets/uploads/<?php echo htmlspecialchars($post['image']); ?>" 
-                             alt="<?php echo htmlspecialchars($post['title']); ?>" 
-                             class="post-image">
+                        <img src="assets/uploads/<?php echo htmlspecialchars($post['image']); ?>"
+                            alt="<?php echo htmlspecialchars($post['title']); ?>"
+                            class="post-image">
                     <?php endif; ?>
 
                     <div class="post-content">
@@ -302,7 +338,36 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
             </a>
         </div>
     </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; position: relative;">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center" style="display: flex; list-style: none; padding: 0; margin: 0; gap: 5px;">
+            <!-- Previous -->
+            <li class="page-item disabled">
+                <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #666; background: #f9f9f9;">Previous</a>
+            </li>
 
+            <!-- Halaman 1 -->
+            <li class="page-item">
+                <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">1</a>
+            </li>
+
+            <!-- Halaman 2 -->
+            <li class="page-item">
+                <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">2</a>
+            </li>
+
+            <!-- Halaman 3 -->
+            <li class="page-item">
+                <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">3</a>
+            </li>
+
+            <!-- Next -->
+            <li class="page-item">
+                <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
     <footer>
         &copy; <?php echo date('Y'); ?> Bhakti Mandiri Wisata Indonesia. All Rights Reserved.
     </footer>
@@ -313,4 +378,5 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
     </a>
 
 </body>
+
 </html>
