@@ -1,4 +1,7 @@
 <?php
+session_start();
+$is_logged_in = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
+
 // index.php - Halaman Utama Publik BMWI
 require_once('includes/db_config.php');
 $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts ORDER BY created_at DESC")->fetchAll();
@@ -278,21 +281,7 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
 
 <body>
 
-    <!-- Header dengan Logo -->
-    <header>
-        <div class="logo-container">
-            <img src="../assets/images/logo.png" alt="Logo BMWI">
-        </div>
-        <h1>Bhakti Mandiri Wisata Indonesia</h1>
-        <h2>Lembaga Sertifikasi Usaha Pariwisata</h2>
-    </header>
-
-    <!-- Banner Promosi -->
-    <div class="container">
-        <div class="promo-banner">
-            <i class="fas fa-certificate"></i> Sertifikasi Usaha Pariwisata Resmi • Proses Cepat & Terpercaya!
-        </div>
-    </div>
+    <?php include_once('includes/header.php'); ?>
 
     <!-- Konten Utama -->
     <div class="container">
@@ -323,59 +312,55 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
                     </div>
                 </div>
             <?php endforeach; ?>
-        <?php else: ?>
+                <?php else: ?>
             <div class="no-posts">
                 <p>Belum ada informasi terbaru.</p>
                 <p style="margin-top: 1rem; font-weight: 600; color: #009624;">
                     <i class="fas fa-lightbulb"></i> Segera dapatkan sertifikasi usaha pariwisata Anda!
                 </p>
             </div>
+        <?php endif; ?> <!-- 🔒 Tutup blok if (count($posts) > 0) -->
+
+        <?php if (!$is_logged_in): ?>
+            <div class="admin-login">
+                <a href="/simply_cms/admin/login.php">
+                    <i class="fas fa-user-lock"></i> Login Admin
+                </a>
+            </div>
         <?php endif; ?>
-
-        <div class="admin-login">
-            <a href="admin/login.php">
-                <i class="fas fa-user-lock"></i> Login Admin
-            </a>
-        </div>
-    </div>
+    </div> <!-- penutup .container -->
     <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; position: relative;">
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center" style="display: flex; list-style: none; padding: 0; margin: 0; gap: 5px;">
-            <!-- Previous -->
-            <li class="page-item disabled">
-                <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #666; background: #f9f9f9;">Previous</a>
-            </li>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center" style="display: flex; list-style: none; padding: 0; margin: 0; gap: 5px;">
+                <!-- Previous -->
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #666; background: #f9f9f9;">Previous</a>
+                </li>
 
-            <!-- Halaman 1 -->
-            <li class="page-item">
-                <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">1</a>
-            </li>
+                <!-- Halaman 1 -->
+                <li class="page-item">
+                    <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">1</a>
+                </li>
 
-            <!-- Halaman 2 -->
-            <li class="page-item">
-                <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">2</a>
-            </li>
+                <!-- Halaman 2 -->
+                <li class="page-item">
+                    <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">2</a>
+                </li>
 
-            <!-- Halaman 3 -->
-            <li class="page-item">
-                <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">3</a>
-            </li>
+                <!-- Halaman 3 -->
+                <li class="page-item">
+                    <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">3</a>
+                </li>
 
-            <!-- Next -->
-            <li class="page-item">
-                <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">Next</a>
-            </li>
-        </ul>
-    </nav>
-</div>
-    <footer>
-        &copy; <?php echo date('Y'); ?> Bhakti Mandiri Wisata Indonesia. All Rights Reserved.
-    </footer>
+                <!-- Next -->
+                <li class="page-item">
+                    <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 
-    <!-- Tombol WhatsApp Mengambang -->
-    <a href="https://wa.me/6281234567890" class="whatsapp-float" target="_blank" title="Hubungi Kami via WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-    </a>
+    <?php include_once('includes/footer.php'); ?>
 
 </body>
 
