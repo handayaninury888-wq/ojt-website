@@ -1,6 +1,6 @@
 <?php
 // admin/posts.php
-require_once('includes/auth_check.php'); // Cek apakah user sudah login
+require_once('../includes/auth_check.php'); // Cek apakah user sudah login
 require_once('../includes/db_config.php');
 
 $message = '';
