@@ -1,117 +1,105 @@
 <?php
-// Mulai sesi
 session_start();
 
-// Jika admin sudah login, langsung redirect ke dashboard
+// Jika sudah login, redirect ke dashboard
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
-    header("Location: index.php");
-    exit();
-}
-
-// Load konfigurasi database
-require_once('../includes/db_config.php');
-
-// Variabel untuk pesan error
-$error = '';
-
-// Proses login saat form dikirim
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
-
-    if (empty($username) || empty($password)) {
-        $error = "Username dan password harus diisi.";
-    } else {
-        // Query untuk mencari admin berdasarkan username
-        // Asumsikan tabel admin bernama `admins` dengan kolom: id, username, password (hashed)
-        $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username = ?");
-        $stmt->execute([$username]);
-        $admin = $stmt->fetch();
-
-        
-        if ($admin && password_verify($password, $admin['password'])) {
-            // Login sukses
-            $_SESSION['admin_logged_in'] = true;
-            $_SESSION['admin_id'] = $admin['id'];
-            $_SESSION['admin_username'] = $admin['username'];
-
-            // Redirect ke dashboard
-            header("Location: index.php");
-            exit();
-        } else {
-            $error = "Username atau password salah.";
-        }
-    }
+    header('Location: dashboard.php');
+    exit;
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Login Admin - BMWI</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f4f4f4;
+            background: #f0f4ff;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
+
         .login-box {
             background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 300px;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 320px;
         }
+
         .login-box h2 {
-            margin-top: 0;
             text-align: center;
+            margin-bottom: 1.5rem;
+            color: #1a73e8;
         }
-        .login-box input[type="text"],
-        .login-box input[type="password"] {
+
+        .login-box input {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 6px;
             box-sizing: border-box;
         }
+
         .login-box button {
             width: 100%;
-            padding: 10px;
-            background: #007bff;
+            padding: 0.75rem;
+            background: #1a73e8;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
+            font-weight: bold;
             cursor: pointer;
         }
+
         .login-box button:hover {
-            background: #0056b3;
+            background: #0d4a7f;
         }
+
         .error {
             color: red;
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 1rem;
         }
     </style>
 </head>
+
 <body>
+
     <div class="login-box">
         <h2>Login Admin</h2>
 
-        <?php if ($error): ?>
-            <div class="error"><?= htmlspecialchars($error) ?></div>
+        <?php if (isset($_GET['error']) && $_GET['error'] === 'invalid'): ?>
+            <div class="error">Username atau password salah!</div>
         <?php endif; ?>
 
-        <form method="POST" action="">
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">Login</button>
+        <form action="../includes/auth-check.php" method="POST">
+            <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                required
+                autocomplete="off"
+                tabindex="1"
+                autofocus>
+            <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                required
+                autocomplete="off"
+                tabindex="2">
+            <button type="submit" tabindex="3">Login</button>
         </form>
     </div>
+
 </body>
+
 </html>
