@@ -41,12 +41,14 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simply_cms.users: ~1 rows (approximately)
+-- Dumping data for table simply_cms.users: ~3 rows (approximately)
 DELETE FROM `users`;
 INSERT INTO `users` (`id`, `username`, `password`, `created_at`) VALUES
-	(1, 'admin', '$2y$10$VQGfzW7dYpUqoRv9FhZxIeDcKbNkXqJiE3lHsOjWfAaZtSgZzGh8.', '2025-11-25 15:38:38');
+	(1, 'admin', '$2y$10$f7mMS4m1OiXSxO3kCEuKc.f6.8EgTVthV1jifigyjGwlFRHMCK0yO', '2025-11-25 15:38:38'),
+	(2, 'dayat', '$2y$10$zX6MNl9Tl.r7HcwzCnGwjOh9lEVHGW1tj5G.rklaYVrbFhpjrOc2W', '2025-12-02 10:59:22'),
+	(3, 'iniaja', '$2y$10$FNXYDv2f/zz0hX741o8aKe1LwD8wKVVJ/tIJ6kbSj5y3bj8id3qAW', '2025-12-03 09:40:09');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
