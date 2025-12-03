@@ -1,16 +1,8 @@
-<?php
-// admin/includes/footer.php
-?>
-    </div> <footer>
-        <hr>
-        <p style="text-align: center; font-size: 0.8em; color: #777;">
-            &copy; <?php echo date('Y'); ?> Simple CMS Administration | Dibuat dengan PHP & MySQL.
-        </p>
-    </footer>
-    
-</body>
-</html>
-<?php
-// Opsional: Untuk memastikan sesi ditutup jika tidak ada penggunaan lebih lanjut
-// session_write_close(); 
-?>
+<footer>
+    &copy; <?php echo date('Y'); ?> Bhakti Mandiri Wisata Indonesia. All Rights Reserved.
+</footer>
+
+<!-- Tombol WhatsApp Mengambang -->
+<a href="https://wa.me/6281234567890" class="whatsapp-float" target="_blank" title="Hubungi Kami via WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+</a>
