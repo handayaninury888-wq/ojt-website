@@ -15,4 +15,4 @@ Password Asli: nuri
 Hash: $2y$10$FNXYDv2f/zz0hX741o8aKe1LwD8wKVVJ/tIJ6kbSj5y3bj8id3qAW
 ------------------------------------------------------------
 '
-![Alt text](path/to/image.jpg "Optional Title")
+![halaman beranda bmwi](https://github.com/handayaninury888-wq/ojt-website/blob/main/assets/images/uiberanda.jpg)
