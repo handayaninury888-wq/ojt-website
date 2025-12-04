@@ -35,7 +35,7 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
 
         /* Header dengan Logo */
         header {
-            background: linear-gradient(135deg, #7dff93ff, #1a73e8);
+            background: linear-gradient(135deg, #7dff93, #1a73e8);
             color: white;
             text-align: center;
             padding: 2rem 1.5rem;
@@ -67,7 +67,7 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
 
         /* Banner Promosi */
         .promo-banner {
-            background: linear-gradient(to right, #00c853, #00a126ff);
+            background: linear-gradient(to right, #00c853, #00a126);
             color: white;
             text-align: center;
             padding: 1.2rem;
@@ -239,19 +239,12 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
         }
 
         @keyframes bounce {
-
-            0%,
-            20%,
-            50%,
-            80%,
-            100% {
+            0%, 20%, 50%, 80%, 100% {
                 transform: translateY(0);
             }
-
             40% {
                 transform: translateY(-10px);
             }
-
             60% {
                 transform: translateY(-5px);
             }
@@ -261,15 +254,12 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
             header h1 {
                 font-size: 1.7rem;
             }
-
             header h2 {
                 font-size: 1.05rem;
             }
-
             .post-content {
                 padding: 1.2rem;
             }
-
             .whatsapp-float {
                 width: 55px;
                 height: 55px;
@@ -312,53 +302,49 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
                     </div>
                 </div>
             <?php endforeach; ?>
-                <?php else: ?>
+        <?php else: ?>
             <div class="no-posts">
                 <p>Belum ada informasi terbaru.</p>
                 <p style="margin-top: 1rem; font-weight: 600; color: #009624;">
                     <i class="fas fa-lightbulb"></i> Segera dapatkan sertifikasi usaha pariwisata Anda!
                 </p>
             </div>
-        <?php endif; ?> <!-- 🔒 Tutup blok if (count($posts) > 0) -->
+        <?php endif; ?>
 
+        <!-- Tampilkan tombol login hanya jika belum login -->
         <?php if (!$is_logged_in): ?>
             <div class="admin-login">
-                <a href="/simply_cms/admin/login.php">
+                <a href="admin/login.php">
                     <i class="fas fa-user-lock"></i> Login Admin
                 </a>
             </div>
         <?php endif; ?>
+
+        <!-- Tampilkan pagination hanya jika sudah login -->
+        <?php if ($is_logged_in): ?>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; position: relative; margin: 2rem 0;">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center" style="display: flex; list-style: none; padding: 0; margin: 0; gap: 5px;">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #666; background: #f9f9f9;">Previous</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">1</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">2</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">3</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        <?php endif; ?>
     </div> <!-- penutup .container -->
-    <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; position: relative;">
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center" style="display: flex; list-style: none; padding: 0; margin: 0; gap: 5px;">
-                <!-- Previous -->
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #666; background: #f9f9f9;">Previous</a>
-                </li>
-
-                <!-- Halaman 1 -->
-                <li class="page-item">
-                    <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">1</a>
-                </li>
-
-                <!-- Halaman 2 -->
-                <li class="page-item">
-                    <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">2</a>
-                </li>
-
-                <!-- Halaman 3 -->
-                <li class="page-item">
-                    <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">3</a>
-                </li>
-
-                <!-- Next -->
-                <li class="page-item">
-                    <a class="page-link" href="#" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: white;">Next</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
 
     <?php include_once('includes/footer.php'); ?>
 
