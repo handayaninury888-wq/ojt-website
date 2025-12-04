@@ -1,6 +1,6 @@
 <?php
 // admin/index.php
-require_once('includes/auth_check.php');
+require_once('includes/auth-check.php');
 require_once('../includes/db_config.php');
 
 try {
