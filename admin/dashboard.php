@@ -39,11 +39,12 @@ $username = $_SESSION['admin_username'] ?? 'Admin';
 
         /* Header dengan Logo */
         header {
-            background: linear-gradient(135deg, #7dff93ff, #1a73e8);
+            background: linear-gradient(135deg, #7dff93, #1a73e8);
             color: white;
             text-align: center;
             padding: 2rem 1.5rem;
             box-shadow: 0 4px 12px rgba(13, 74, 127, 0.2);
+            position: relative;
         }
 
         .logo-container {
@@ -69,9 +70,28 @@ $username = $_SESSION['admin_username'] ?? 'Admin';
             opacity: 0.95;
         }
 
+        /* Tombol Logout di Header (opsional) */
+        .logout-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
         /* Banner Promosi */
         .promo-banner {
-            background: linear-gradient(to right, #00c853, #00a126ff);
+            background: linear-gradient(to right, #00c853, #00a126);
             color: white;
             text-align: center;
             padding: 1.2rem;
@@ -103,109 +123,44 @@ $username = $_SESSION['admin_username'] ?? 'Admin';
             padding: 0 1.5rem;
         }
 
-        .post-card {
+        /* Card untuk Statistik & Mulai Sekarang */
+        .card {
             background: white;
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2.2rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 1.8rem;
         }
 
-        .post-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-        }
-
-        .post-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            background: #f0f4ff;
-        }
-
-        .post-content {
-            padding: 1.6rem;
-        }
-
-        .post-card h3 a {
+        .card h3 {
+            margin-bottom: 0.8rem;
             color: #0d4a7f;
-            text-decoration: none;
             font-family: 'Poppins', sans-serif;
-            font-size: 1.45rem;
-            transition: color 0.2s;
+            font-size: 1.3rem;
         }
 
-        .post-card h3 a:hover {
-            color: #1a73e8;
-        }
-
-        .post-meta {
-            color: #5a6c85;
-            font-size: 0.9rem;
-            margin: 0.6rem 0 1rem;
-        }
-
-        .post-meta i {
-            margin-right: 6px;
-            color: #1a73e8;
-        }
-
-        .post-excerpt {
+        .card p {
+            margin-bottom: 0.8rem;
             color: #444;
-            margin-bottom: 1.2rem;
-            font-size: 1rem;
         }
 
-        .read-more {
-            display: inline-block;
-            background: #1a73e8;
-            color: white;
-            text-decoration: none;
-            padding: 0.55rem 1.3rem;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: background 0.3s;
-        }
-
-        .read-more:hover {
-            background: #0d4a7f;
-        }
-
-        .no-posts {
-            text-align: center;
-            padding: 3rem 1.5rem;
-            background: white;
-            border-radius: 14px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-            font-size: 1.2rem;
+        .card ul {
+            padding-left: 1.5rem;
+            margin: 0.8rem 0;
             color: #555;
         }
 
-        .admin-login {
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #e0e7ff;
-        }
-
-        .admin-login a {
+        .card a {
             color: #1a73e8;
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.05rem;
-            padding: 0.5rem 1.2rem;
-            border: 1px solid #1a73e8;
-            border-radius: 30px;
-            transition: all 0.3s;
         }
 
-        .admin-login a:hover {
-            background: #1a73e8;
-            color: white;
+        .card a:hover {
+            text-decoration: underline;
         }
 
+        /* Footer */
         footer {
             text-align: center;
             padding: 1.8rem;
@@ -270,8 +225,15 @@ $username = $_SESSION['admin_username'] ?? 'Admin';
                 font-size: 1.05rem;
             }
 
-            .post-content {
-                padding: 1.2rem;
+            .logout-btn {
+                top: 0.8rem;
+                right: 1rem;
+                font-size: 0.85rem;
+                padding: 0.3rem 0.8rem;
+            }
+
+            .container {
+                padding: 0 1rem;
             }
 
             .whatsapp-float {
@@ -285,38 +247,58 @@ $username = $_SESSION['admin_username'] ?? 'Admin';
 
 <body>
 
-    <!-- Sisipkan header yang sama seperti index.php -->
-    <?php include_once('../includes/header.php'); ?>
-    <!-- Konten Dashboard -->
+    <!-- Header Admin -->
+    <header>
+        <div class="logo-container">
+            <img src="../assets/logo.png" alt="Logo BMWI">
+        </div>
+        <h1>Dashboard Admin</h1>
+        <h2>Bhakti Mandiri Wisata Indonesia</h2>
+        <!-- 🔴 Link Logout di Header -->
+        <a href="logout.php" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </header>
+
+    
+
+    <!-- Konten Utama -->
     <div class="container">
-        <div class="content">
-            <h2><i class="fas fa-tachometer-alt"></i> Dashboard Admin</h2>
-            <p>Selamat datang, <strong><?= htmlspecialchars($username) ?></strong>! Anda telah berhasil masuk ke panel administrasi.</p>
+        <h2><i class="fas fa-tachometer-alt"></i> Dashboard Admin</h2>
+        <p>Selamat datang, <strong><?= htmlspecialchars($username) ?></strong>! Anda telah berhasil masuk ke panel administrasi.</p>
 
-            <div class="card">
-                <h3>📊 Statistik Singkat</h3>
-                <p>Di sini Anda bisa melihat ringkasan aktivitas sistem.</p>
-                <ul>
-                    <li>Manajemen posting artikel</li>
-                    <li>Kelola pengguna admin</li>
-                    <li>Pengaturan umum situs</li>
-                </ul>
-            </div>
+        <div class="card">
+            <h3>📊 Statistik Singkat</h3>
+            <p>Di sini Anda bisa melihat ringkasan aktivitas sistem.</p>
+            <ul>
+                <li>Manajemen posting artikel</li>
+                <li>Kelola pengguna admin</li>
+                <li>Pengaturan umum situs</li>
+            </ul>
+        </div>
 
-            <div class="card">
-                <h3>🚀 Mulai Sekarang</h3>
-                <p>Anda dapat mulai mengembangkan CMS dengan menambahkan fitur:</p>
-                <ul>
-                    <li><a href="posts.php">Kelola Posting</a></li>
-                    <li><a href="users.php">Kelola Pengguna</a></li>
-                    <li><a href="settings.php">Pengaturan Situs</a></li>
-                </ul>
-            </div>
+        <div class="card">
+            <h3>🚀 Mulai Sekarang</h3>
+            <p>Anda dapat mulai mengembangkan CMS dengan menambahkan fitur:</p>
+            <ul>
+                <li><a href="posts.php">Kelola Posting</a></li>
+                <li><a href="users.php">Kelola Pengguna</a></li>
+                <li><a href="settings.php">Pengaturan Situs</a></li>
+                
+            </ul>
         </div>
     </div>
 
-    <!-- Sisipkan footer yang sama seperti index.php -->
-    <?php include_once('../includes/footer.php'); ?>
+    <!-- Footer -->
+    <footer>
+        &copy; <?= date('Y') ?> Bhakti Mandiri Wisata Indonesia. All Rights Reserved.
+    </footer>
+
+    <!-- Tombol WhatsApp Mengambang -->
+    <a href="https://wa.me/6281234567890" target="_blank" class="whatsapp-float">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
 </body>
 
 </html>
