@@ -239,12 +239,19 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
         }
 
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
                 transform: translateY(0);
             }
+
             40% {
                 transform: translateY(-10px);
             }
+
             60% {
                 transform: translateY(-5px);
             }
@@ -254,12 +261,15 @@ $posts = $pdo->query("SELECT id, title, content, image, created_at FROM posts OR
             header h1 {
                 font-size: 1.7rem;
             }
+
             header h2 {
                 font-size: 1.05rem;
             }
+
             .post-content {
                 padding: 1.2rem;
             }
+
             .whatsapp-float {
                 width: 55px;
                 height: 55px;
