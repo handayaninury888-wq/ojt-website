@@ -1,22 +1,15 @@
 <?php
 session_start();
-$is_logged_in = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
 
-// 💡 DEBUG: Cek apakah session aktif
-if ($is_logged_in) {
-    echo '<div style="background: green; color: white; padding: 10px; text-align: center; position: fixed; top: 0; left: 0; right: 0; z-index: 9999;">
-        ✅ Admin sudah login! Pagination seharusnya muncul.
-    </div>';
-} else {
-    echo '<div style="background: red; color: white; padding: 10px; text-align: center; position: fixed; top: 0; left: 0; right: 0; z-index: 9999;">
-        ❌ Belum login. Session tidak aktif.
-    </div>';
+// Jika sudah login, langsung ke dashboard admin
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+    header("Location: index.php");
+    exit();
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <title>Login Admin - BMWI</title>
@@ -76,7 +69,6 @@ if ($is_logged_in) {
         }
     </style>
 </head>
-
 <body>
 
     <div class="login-box">
@@ -107,5 +99,4 @@ if ($is_logged_in) {
     </div>
 
 </body>
-
 </html>
