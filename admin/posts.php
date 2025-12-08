@@ -1,154 +1,276 @@
 <?php
-// admin/posts.php
-require_once('../includes/auth-check.php'); // Cek apakah user sudah login
-require_once('../includes/db_config.php');
+session_start();
 
-$message = '';
-$posts = $pdo->query("SELECT * FROM posts ORDER BY created_at DESC")->fetchAll();
-
-// === Logic untuk Tambah/Edit Post ===
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = $_POST['title'] ?? '';
-    $content = $_POST['content'] ?? '';
-    $post_id = $_POST['id'] ?? null;
-    $image_name = $_POST['current_image'] ?? null; // Untuk edit
-
-    // --- LOGIKA UPLOAD GAMBAR ---
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
-        $upload_dir = '../assets/uploads/';
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-
-        if (in_array($_FILES['image']['type'], $allowed_types)) {
-            $image_name = time() . '_' . basename($_FILES['image']['name']);
-            if (!move_uploaded_file($_FILES['image']['tmp_name'], $upload_dir . $image_name)) {
-                $message = 'Error: Gagal mengunggah gambar.';
-            }
-        } else {
-            $message = 'Error: Hanya format JPG, PNG, atau GIF yang diizinkan.';
-        }
-    }
-    // ----------------------------
-
-    if (!$message) { // Jika tidak ada error upload
-        if ($post_id) {
-            // UPDATE Post
-            $stmt = $pdo->prepare("UPDATE posts SET title = ?, content = ?, image = ? WHERE id = ?");
-            $stmt->execute([$title, $content, $image_name, $post_id]);
-            $message = 'Postingan berhasil diperbarui!';
-        } else {
-            // CREATE Post
-            $stmt = $pdo->prepare("INSERT INTO posts (title, content, image) VALUES (?, ?, ?)");
-            $stmt->execute([$title, $content, $image_name]);
-            $message = 'Postingan baru berhasil ditambahkan!';
-        }
-        // Redirect untuk refresh daftar dan hapus data POST
-        header('Location: posts.php?msg=' . urlencode($message));
-        exit;
-    }
-}
-
-// === Logic Hapus Post ===
-if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
-    $id = (int)$_GET['id'];
-    
-    // Ambil nama gambar untuk dihapus
-    $stmt = $pdo->prepare("SELECT image FROM posts WHERE id = ?");
-    $stmt->execute([$id]);
-    $post_to_delete = $stmt->fetch();
-
-    if ($post_to_delete && $post_to_delete['image']) {
-        unlink('../assets/uploads/' . $post_to_delete['image']);
-    }
-
-    // Hapus dari database
-    $stmt = $pdo->prepare("DELETE FROM posts WHERE id = ?");
-    $stmt->execute([$id]);
-    header('Location: posts.php?msg=' . urlencode('Postingan berhasil dihapus.'));
+// Proteksi halaman admin
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header('Location: ../login.php');
     exit;
 }
 
-// === Tampilan Edit Form (Jika ada parameter 'edit_id') ===
-$post_to_edit = null;
-if (isset($_GET['edit_id'])) {
-    $stmt = $pdo->prepare("SELECT * FROM posts WHERE id = ?");
-    $stmt->execute([(int)$_GET['edit_id']]);
-    $post_to_edit = $stmt->fetch();
-}
+include 'config.php'; // Sesuaikan path jika config.php ada di root
 
-// Tampilkan pesan status
-if (isset($_GET['msg'])) {
-    $message = htmlspecialchars($_GET['msg']);
-}
+// === PAGINATION ===
+$limit = 5;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$page = max(1, $page);
+$offset = ($page - 1) * $limit;
+
+// Hitung total post
+$total_sql = "SELECT COUNT(*) as total FROM posts";
+$total_result = mysqli_query($conn, $total_sql);
+$total = mysqli_fetch_assoc($total_result)['total'];
+$total_pages = ceil($total / $limit);
+
+// Ambil data post
+$sql = "SELECT id, title, content, image, created_at 
+        FROM posts 
+        ORDER BY created_at DESC 
+        LIMIT $limit OFFSET $offset";
+$posts_result = mysqli_query($conn, $sql);
 ?>
 
 <!DOCTYPE html>
-<html>
-<head><title>Admin - Manajemen Post</title></head>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Postingan - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f8fbff, #eef5ff);
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        header {
+            background: linear-gradient(135deg, #7dff93, #1a73e8);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(13, 74, 127, 0.2);
+        }
+        header h1 { font-family: 'Poppins', sans-serif; font-size: 1.8rem; }
+        .nav {
+            background: #343a40;
+            padding: 0.8rem;
+            text-align: center;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 12px;
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
+        .nav a:hover { background: #555; }
+        .container {
+            max-width: 900px;
+            margin: 1.5rem auto;
+            padding: 0 1.5rem;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .btn-primary {
+            display: inline-block;
+            background: #1a73e8;
+            color: white;
+            text-decoration: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .btn-primary:hover { background: #0d4a7f; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        th, td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #0d4a7f;
+        }
+        tr:last-child td { border-bottom: none; }
+        .post-title {
+            font-weight: 600;
+            color: #0d4a7f;
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+        .post-date {
+            color: #5a6c85;
+            font-size: 0.9rem;
+        }
+        .actions a {
+            margin-right: 10px;
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .actions a:hover { text-decoration: underline; }
+        .actions a.delete { color: #e74c3c; }
+        .empty {
+            text-align: center;
+            padding: 2.5rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            color: #666;
+        }
+        .pagination {
+            margin-top: 1.8rem;
+            text-align: center;
+        }
+        .pagination a, .pagination span {
+            display: inline-block;
+            padding: 8px 14px;
+            margin: 0 4px;
+            text-decoration: none;
+            color: #1a73e8;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .pagination a:hover { background: #f1f9ff; }
+        .pagination .active {
+            background: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+        .pagination .disabled {
+            color: #ccc;
+            pointer-events: none;
+        }
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #666;
+            background: #f8fbff;
+            margin-top: 2rem;
+            border-top: 1px solid #eef5ff;
+        }
+        @media (max-width: 600px) {
+            .page-header { flex-direction: column; gap: 12px; }
+            th, td { padding: 10px 8px; font-size: 0.9rem; }
+            .post-title { max-width: 180px; }
+        }
+    </style>
+</head>
 <body>
-    <h2>Manajemen Post</h2>
-    <?php if ($message): ?>
-        <p style="color: green; font-weight: bold;"><?php echo $message; ?></p>
-    <?php endif; ?>
 
-    <h3><?php echo $post_to_edit ? 'Edit' : 'Tambah'; ?> Post</h3>
-    <form method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="id" value="<?php echo $post_to_edit['id'] ?? ''; ?>">
-        <input type="hidden" name="current_image" value="<?php echo $post_to_edit['image'] ?? ''; ?>">
+    <header>
+        <h1>Manajemen Postingan</h1>
+    </header>
 
-        <label>Judul:</label><br>
-        <input type="text" name="title" value="<?php echo $post_to_edit['title'] ?? ''; ?>" required><br><br>
+    <div class="nav">
+        <a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="posts.php" style="background:#555">Postingan</a>
+        <a href="users.php">Pengguna</a>
+        <a href="settings.php">Pengaturan Situs</a>
+        
+    </div>
 
-        <label>Konten:</label><br>
-        <textarea name="content" rows="10" cols="50" required><?php echo $post_to_edit['content'] ?? ''; ?></textarea><br><br>
+    <div class="container">
+        <div class="page-header">
+            <h2>Daftar Postingan</h2>
+            <a href="post-add.php" class="btn-primary"><i class="fas fa-plus"></i> Tambah Baru</a>
+        </div>
 
-        <label>Gambar:</label>
-        <?php if (isset($post_to_edit['image'])): ?>
-            <p>Gambar saat ini: <img src="../assets/uploads/<?php echo $post_to_edit['image']; ?>" width="100"></p>
+        <?php if ($total > 0): ?>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Judul</th>
+                        <th>Tanggal</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    while ($post = mysqli_fetch_assoc($posts_result)) {
+                        $formatted_date = date('d M Y H:i', strtotime($post['created_at']));
+                        echo "<tr>";
+                        echo "<td>" . $post['id'] . "</td>";
+                        echo "<td class='post-title'>" . htmlspecialchars($post['title']) . "</td>";
+                        echo "<td class='post-date'>" . $formatted_date . "</td>";
+                        echo "<td class='actions'>";
+                        echo "<a href='post-edit.php?id=" . $post['id'] . "'>Edit</a>";
+                        echo "<a href='post-delete.php?id=" . $post['id'] . "' class='delete' onclick='return confirm(\"Yakin hapus postingan ini?\")'>Hapus</a>";
+                        echo "</td>";
+                        echo "</tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <?php if ($total_pages > 1): ?>
+            <div class="pagination">
+                <?php if ($page > 1): ?>
+                    <a href="?page=<?= $page - 1 ?>">&laquo; Sebelumnya</a>
+                <?php else: ?>
+                    <span class="disabled">&laquo; Sebelumnya</span>
+                <?php endif; ?>
+
+                <?php
+                $start = max(1, $page - 2);
+                $end = min($total_pages, $page + 2);
+
+                if ($start > 1) {
+                    echo '<a href="?page=1">1</a>';
+                    if ($start > 2) echo '<span>...</span>';
+                }
+
+                for ($i = $start; $i <= $end; $i++) {
+                    if ($i == $page) {
+                        echo '<span class="active">' . $i . '</span>';
+                    } else {
+                        echo '<a href="?page=' . $i . '">' . $i . '</a>';
+                    }
+                }
+
+                if ($end < $total_pages) {
+                    if ($end < $total_pages - 1) echo '<span>...</span>';
+                    echo '<a href="?page=' . $total_pages . '">' . $total_pages . '</a>';
+                }
+                ?>
+
+                <?php if ($page < $total_pages): ?>
+                    <a href="?page=<?= $page + 1 ?>">Selanjutnya &raquo;</a>
+                <?php else: ?>
+                    <span class="disabled">Selanjutnya &raquo;</span>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+
+        <?php else: ?>
+            <div class="empty">
+                <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; color: #ccc;"></i>
+                <p>Belum ada postingan.</p>
+                <a href="post-add.php" class="btn-primary" style="margin-top: 1rem;">Buat Postingan Pertama</a>
+            </div>
         <?php endif; ?>
-        <input type="file" name="image"><br>
-        <small>Kosongkan jika tidak ingin mengubah gambar.</small><br><br>
+    </div>
 
-        <button type="submit"><?php echo $post_to_edit ? 'Simpan Perubahan' : 'Terbitkan Post'; ?></button>
-        <?php if ($post_to_edit): ?>
-            <a href="posts.php">Batal Edit</a>
-        <?php endif; ?>
-    </form>
+    <footer>
+        &copy; <?= date('Y') ?> Bhakti Mandiri Wisata Indonesia. All Rights Reserved.
+    </footer>
 
-    <hr>
-
-    <h3>Daftar Postingan</h3>
-    <table border="1" cellpadding="10">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Judul</th>
-                <th>Gambar</th>
-                <th>Tanggal</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($posts as $post): ?>
-            <tr>
-                <td><?php echo $post['id']; ?></td>
-                <td><?php echo htmlspecialchars($post['title']); ?></td>
-                <td>
-                    <?php if ($post['image']): ?>
-                        ); ?> thumbnail]
-                    <?php else: ?>
-                        (Tidak ada gambar)
-                    <?php endif; ?>
-                </td>
-                <td><?php echo $post['created_at']; ?></td>
-                <td>
-                    <a href="posts.php?edit_id=<?php echo $post['id']; ?>">Edit</a> |
-                    <a href="posts.php?action=delete&id=<?php echo $post['id']; ?>" onclick="return confirm('Yakin ingin menghapus postingan ini?');">Hapus</a>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <br>
-    <a href="logout.php">Logout</a>
 </body>
 </html>
